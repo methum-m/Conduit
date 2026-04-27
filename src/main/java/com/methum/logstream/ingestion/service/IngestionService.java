@@ -2,6 +2,7 @@ package com.methum.logstream.ingestion.service;
 
 import com.methum.logstream.ingestion.LogEntry;
 import com.methum.logstream.ingestion.dtos.LogEntryRequestDto;
+import com.methum.logstream.storage.InvertedIndex;
 import com.methum.logstream.storage.LogReader;
 import com.methum.logstream.storage.LogWriter;
 import org.springframework.stereotype.Service;
@@ -17,9 +18,12 @@ public class IngestionService {
 
     private final LogReader logReader;
 
-    public IngestionService(LogWriter logWriter, LogReader logReader){
+    private final InvertedIndex index;
+
+    public IngestionService(LogWriter logWriter, LogReader logReader, InvertedIndex index){
         this.logWriter = logWriter;
         this.logReader = logReader;
+        this.index = index;
     }
 
     public void handleLogEntryRequest(LogEntryRequestDto logEntryRequestDto) throws IOException {
@@ -35,5 +39,11 @@ public class IngestionService {
 
         return logReader.read();
 
+    }
+
+    public List<LogEntry> handleSearch(String term) throws IOException {
+
+
+        return index.search(term);
     }
 }

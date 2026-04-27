@@ -37,6 +37,14 @@ public class IngestionController {
 
     }
 
+    @GetMapping("/search/{term}")
+    public List<LogEntry> search(@PathVariable String term) throws IOException {
+
+       return ingestionService.handleSearch(term);
+
+    }
+
+
 
 
 

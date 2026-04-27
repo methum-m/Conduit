@@ -2,6 +2,8 @@ package com.methum.logstream.storage;
 
 import com.methum.logstream.ingestion.LogEntry;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import tools.jackson.core.io.UTF8Writer;
@@ -15,19 +17,31 @@ import java.nio.file.StandardOpenOption;
 @Component
 public class LogWriter {
 
+    private static final Logger log = LoggerFactory.getLogger(LogWriter.class);
     private final Path filepath;
 
-    public LogWriter(@Value("${logstream.storage.path}") String filePath){
+    private final InvertedIndex invertedIndex;
+
+    public LogWriter(@Value("${logstream.storage.path}") String filePath, InvertedIndex invertedIndex){
 
         this.filepath = Path.of(filePath);
+        this.invertedIndex = invertedIndex;
     }
 
-    public void write(LogEntry logEntry){
+    public void write(LogEntry logEntry) throws IOException {
 
         byte[] serviceBytes = logEntry.service().getBytes(StandardCharsets.UTF_8);
         byte[] messageBytes = logEntry.message().getBytes(StandardCharsets.UTF_8);
 
-        try (DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(Files.newOutputStream(filepath, StandardOpenOption.APPEND)))) {
+        long  fileOffset = Files.size(filepath);
+
+        System.out.println(fileOffset);
+
+
+        try (DataOutputStream dos = new DataOutputStream
+                (new BufferedOutputStream
+                        (Files.newOutputStream(filepath, StandardOpenOption.APPEND)))) {
+
 
             dos.writeLong(logEntry.timestamp().toEpochMilli());
             dos.writeByte(logEntry.level().getNumber());
@@ -36,8 +50,15 @@ public class LogWriter {
             dos.writeInt(messageBytes.length);
             dos.write(messageBytes);
 
+
+            invertedIndex.index(logEntry,fileOffset);
+
+
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
+
+
 }
