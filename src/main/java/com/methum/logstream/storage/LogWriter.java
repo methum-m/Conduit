@@ -2,6 +2,7 @@ package com.methum.logstream.storage;
 
 import com.methum.logstream.ingestion.LogEntry;
 
+import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,6 +12,7 @@ import tools.jackson.core.io.UTF8Writer;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
@@ -58,6 +60,33 @@ public class LogWriter {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+
+    @PostConstruct
+    public void ensureStorageExists(){
+
+
+        if (!Files.exists(filepath.getParent())){
+            try{
+                Files.createDirectory(filepath.getParent());
+                Files.createFile(filepath);
+
+             } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }else if(!Files.exists(filepath)){
+
+            try {
+                Files.createFile(filepath);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+
+        }
+
+
+
     }
 
 

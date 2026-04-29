@@ -28,7 +28,9 @@ public class LogReader {
 
     public List<LogEntry> read(){
 
-
+        if (!Files.exists(filePath)){
+            return new ArrayList<>();
+        }
         List<LogEntry> logEntries = new ArrayList<LogEntry>();
 
         try(
@@ -39,7 +41,7 @@ public class LogReader {
 
                 long timestamp;
                 try{
-                  timestamp = dis.readLong();
+                    timestamp = dis.readLong();
                 }catch (EOFException e){
                     break;
                 }
@@ -117,10 +119,17 @@ public class LogReader {
             throw new RuntimeException(e);
         }
 
+
+
     }
 
 
     public Map<Long,LogEntry>  readWithOffsets(){
+
+        if (!Files.exists(filePath)){
+            return new HashMap<>();
+        }
+
 
         Map<Long,LogEntry> longLogEntryMap = new HashMap<>();
 
@@ -163,6 +172,7 @@ public class LogReader {
         }
 
         return longLogEntryMap;
+
 
 
     }
