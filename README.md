@@ -66,7 +66,7 @@ GET /read  GET /search
 Storing logs as JSON on disk is convenient but wasteful field names are repeated for every record, and the parser has to scan every byte to find field boundaries. Conduit's binary format encodes each record as a fixed structure with length-prefixed fields. The reader always knows exactly how many bytes to read, which allows for efficient sequential reads and direct offset-based access.
 
 ### Length-Prefix Framing
-Each field in a record is preceded by its byte length. This means the decoder never needs to scan for a delimiter — it reads the length, reads exactly that many bytes, and moves on. This is the same framing approach used in systems like Protocol Buffers and Kafka's wire format.
+Each field in a record is preceded by its byte length. This means the decoder never needs to scan for a delimiter it reads the length, reads exactly that many bytes, and moves on. This is the same framing approach used in systems like Protocol Buffers and Kafka's wire format.
 
 ### Variable Length Encoding *(In Progress)*
 For length prefix values, Conduit will use a custom Variable Length Encoding (VLE) scheme. Small values (the common case) encode in a single byte; larger values use continuation bits to span multiple bytes. This reduces the per-record overhead for short fields without imposing a fixed upper limit on field size.
