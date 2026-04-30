@@ -1,0 +1,26 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout version
+        uses: actions/checkout@v3
+      - name: Deploy to Droplet
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.DROPLET_HOST }}
+          username: ${{ secrets.DROPLET_USER }}
+          key: ${{ secrets.DROPLET_SSH_KEY }}
+          script: |
+            cd /home/methum/logstream
+            git pull origin main
+            docker build -t logstream .
+            docker stop logstream || true
+            docker rm logstream || true
+            docker run -d -p 8080:8080 -v /var/log/logstream:/var/log/logstream --name logstream logstream
