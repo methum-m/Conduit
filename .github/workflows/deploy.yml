@@ -24,4 +24,4 @@ jobs:
             docker build -t logstream .
             docker stop logstream || true
             docker rm logstream || true
-            docker run -d -p 8080:8080 -v /var/log/logstream:/var/log/logstream --name logstream logstream
+            docker run -d --restart unless-stopped -p 8080:8080 -v /var/log/logstream:/var/log/logstream --name logstream logstream
