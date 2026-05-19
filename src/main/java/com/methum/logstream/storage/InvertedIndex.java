@@ -96,9 +96,9 @@ public class InvertedIndex {
     }
 
     @PostConstruct
-    public void rebuildIndex(){
+    public void rebuildIndex() throws IOException {
 
-        if (Files.exists(filePath)){
+        if (Files.exists(filePath) && Files.size(filePath)!=0){
 
             // construct the type for List<Long>
             // construct the type for termOffset HashMap<String,List<Long>>
@@ -118,8 +118,13 @@ public class InvertedIndex {
 
 
         }else{
+
             try {
+
+                if (!Files.exists(filePath)){
                 Files.createFile(filePath);
+            }
+
 
                 Map<Long,LogEntry> logEntryMap = logReader.readWithOffsets();
 
