@@ -1,4 +1,4 @@
-# Conduit
+# Siphon
 
 **A high-performance log ingestion and search system designed for scalable, real-time processing.**
 
